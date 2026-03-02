@@ -444,18 +444,25 @@ export class UIRenderer {
     </tr>`;
     }).join('');
 
-    container.innerHTML = `<div class="admin-section">
+    const prevSection = container.querySelector('.collapsible-section');
+    const wasCollapsed = prevSection ? prevSection.classList.contains('collapsed') : false;
+
+    container.innerHTML = `<div class="admin-section collapsible-section${wasCollapsed ? ' collapsed' : ''}">
     <h3 class="admin-section__title">도시별 내정인원</h3>
-    <table class="data-table admin-city-slots-table">
-      <thead><tr>
-        <th style="width:50px">순위</th>
-        <th>도시</th>
-        <th style="width:60px">모병</th>
-        <th style="width:70px">기본</th>
-        <th style="width:100px">배정인원</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
+    <div class="collapsible-section__body">
+      <div class="collapsible-section__inner">
+        <table class="data-table admin-city-slots-table">
+          <thead><tr>
+            <th style="width:50px">순위</th>
+            <th>도시</th>
+            <th style="width:60px">모병</th>
+            <th style="width:70px">기본</th>
+            <th style="width:100px">배정인원</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>
   </div>`;
   }
 

@@ -766,6 +766,19 @@ function init() {
     renderer.renderAssignmentResults(state.assignmentResult);
     renderer.renderSummonTab();
     renderer.renderAppointmentTab();
+
+    // Collapse config sections after execution
+    document.querySelectorAll('#tab-admin .collapsible-section').forEach(el => {
+      el.classList.add('collapsed');
+    });
+  });
+
+  // Collapsible section toggle
+  document.getElementById('tab-admin').addEventListener('click', (e) => {
+    const title = e.target.closest('.collapsible-section > .admin-section__title');
+    if (!title) return;
+    if (e.target.closest('.btn-reset')) return;
+    title.closest('.collapsible-section').classList.toggle('collapsed');
   });
 
   // City recruit checkboxes

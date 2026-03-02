@@ -1178,25 +1178,64 @@ body {
 
 /* ===== Admin Tab ===== */
 .admin-config {
-  background: var(--bg-primary);
+  background: var(--bg-secondary);
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 20px;
   margin-bottom: 24px;
   box-shadow: var(--shadow);
 }
-.admin-config .admin-settings {
-  border: none;
-  box-shadow: none;
-  padding: 0;
-  margin-bottom: 16px;
-}
-.admin-config .admin-settings::before {
-  display: none;
+
+/* ===== Collapsible Sections ===== */
+.collapsible-section .admin-section__title {
+  cursor: pointer;
+  user-select: none;
 }
 
-.admin-settings {
+.collapsible-section .admin-section__title::before {
+  content: '';
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--text-secondary);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+
+.collapsible-section.collapsed .admin-section__title::before {
+  transform: rotate(-90deg);
+}
+
+.collapsible-section__body {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.3s ease;
+}
+
+.collapsible-section.collapsed .collapsible-section__body {
+  grid-template-rows: 0fr;
+}
+
+.collapsible-section__inner {
+  overflow: hidden;
+}
+
+/* ===== Trade Section Layout ===== */
+.admin-trade-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.trade-nation-group {
+  display: flex;
   align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .trade-checkboxes {
@@ -1669,27 +1708,31 @@ body {
 /* ===== Unassigned Table ===== */
 
 .unassigned-table {
-  width: 100%;
+  width: auto;
   border-collapse: collapse;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 .unassigned-table th {
   text-align: center;
-  padding: 4px 8px;
+  padding: 6px 12px;
   font-weight: 600;
   color: var(--text-muted);
-  border-bottom: 1px solid var(--border);
-  font-size: 0.78rem;
+  border-bottom: 2px solid var(--border);
+  font-size: 0.82rem;
 }
 .unassigned-table th:first-child {
   text-align: left;
 }
 .unassigned-table td {
-  padding: 3px 8px;
+  padding: 5px 12px;
   text-align: center;
 }
 .unassigned-table td:first-child {
   text-align: left;
+  padding-right: 24px;
+}
+.unassigned-table tbody tr:nth-child(even) {
+  background: var(--bg-table-alt);
 }
 .unassigned-table tr:hover {
   background: var(--bg-hover);

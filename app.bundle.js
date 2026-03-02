@@ -36359,14 +36359,10 @@ class AssignmentEngine {
       trainPool.push(...pool.splice(0, trainRemain));
     }
 
-    // Step 7: 교역 잔여 슬롯 채움
+    // Step 7: 교역 잔여 슬롯 채움 (closest 모드만 — desc 모드는 내정 배치 후 처리)
     const tradeRemain = Math.max(0, tradeSlots - tradePool.length);
-    if (tradeRemain > 0 && pool.length > 0) {
-      if (cfg.tradeOverflowMode === 'closest') {
-        pool.sort(absDistAsc(cfg.tradeSortKey, cfg.tradeTargetValue));
-      } else {
-        pool.sort(descBy(cfg.tradeSortKey));
-      }
+    if (cfg.tradeOverflowMode === 'closest' && tradeRemain > 0 && pool.length > 0) {
+      pool.sort(absDistAsc(cfg.tradeSortKey, cfg.tradeTargetValue));
       tradePool.push(...pool.splice(0, tradeRemain));
     }
 
@@ -36469,6 +36465,34 @@ class AssignmentEngine {
       } else {
         const idx = cityResult.defenseAdmins.indexOf(best.id);
         if (idx !== -1) cityResult.defenseAdmins.splice(idx, 1);
+      }
+    }
+
+    // [desc 모드] 내정 배치 후 남은 무장에서 교역 잔여 슬롯 채움
+    if (cfg.tradeOverflowMode === 'desc') {
+      const descTradeRemain = Math.max(0, tradeSlots - tradePool.length);
+      if (descTradeRemain > 0 && result.unassigned.length > 0) {
+        const candidates = result.unassigned
+          .map(id => OFFICERS.find(o => o.id === id))
+          .filter(Boolean);
+        candidates.sort(descBy(cfg.tradeSortKey));
+        const toTrade = candidates.slice(0, descTradeRemain);
+        const toTradeIds = new Set(toTrade.map(o => o.id));
+        result.unassigned = result.unassigned.filter(id => !toTradeIds.has(id));
+        let lateNationIdx = 0;
+        for (const officer of toTrade) {
+          let placed = false;
+          for (let attempt = 0; attempt < activeNations.length; attempt++) {
+            const nation = activeNations[lateNationIdx % activeNations.length];
+            lateNationIdx++;
+            if (result.tradeAgents[nation].length < cfg.maxTradersPerNation) {
+              result.tradeAgents[nation].push(officer.id);
+              placed = true;
+              break;
+            }
+          }
+          if (!placed) result.unassigned.push(officer.id);
+        }
       }
     }
 
@@ -36927,18 +36951,25 @@ class UIRenderer {
     </tr>`;
     }).join('');
 
-    container.innerHTML = `<div class="admin-section">
+    const prevSection = container.querySelector('.collapsible-section');
+    const wasCollapsed = prevSection ? prevSection.classList.contains('collapsed') : false;
+
+    container.innerHTML = `<div class="admin-section collapsible-section${wasCollapsed ? ' collapsed' : ''}">
     <h3 class="admin-section__title">도시별 내정인원</h3>
-    <table class="data-table admin-city-slots-table">
-      <thead><tr>
-        <th style="width:50px">순위</th>
-        <th>도시</th>
-        <th style="width:60px">모병</th>
-        <th style="width:70px">기본</th>
-        <th style="width:100px">배정인원</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
+    <div class="collapsible-section__body">
+      <div class="collapsible-section__inner">
+        <table class="data-table admin-city-slots-table">
+          <thead><tr>
+            <th style="width:50px">순위</th>
+            <th>도시</th>
+            <th style="width:60px">모병</th>
+            <th style="width:70px">기본</th>
+            <th style="width:100px">배정인원</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>
   </div>`;
   }
 
@@ -38222,6 +38253,19 @@ function init() {
     renderer.renderAssignmentResults(state.assignmentResult);
     renderer.renderSummonTab();
     renderer.renderAppointmentTab();
+
+    // Collapse config sections after execution
+    document.querySelectorAll('#tab-admin .collapsible-section').forEach(el => {
+      el.classList.add('collapsed');
+    });
+  });
+
+  // Collapsible section toggle
+  document.getElementById('tab-admin').addEventListener('click', (e) => {
+    const title = e.target.closest('.collapsible-section > .admin-section__title');
+    if (!title) return;
+    if (e.target.closest('.btn-reset')) return;
+    title.closest('.collapsible-section').classList.toggle('collapsed');
   });
 
   // City recruit checkboxes
