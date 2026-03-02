@@ -258,6 +258,50 @@ function loadAppointment() {
   } catch (e) { /* ignore */ }
 }
 
+// ===== STATE EXPORT / IMPORT =====
+
+const STATE_KEYS = [
+  ROSTER_KEY, CITIES_KEY, 'rtk14_corps', 'rtk14_trade',
+  MANUAL_TRADE_KEY, CITY_SLOTS_KEY, CITY_RECRUIT_KEY,
+  SUMMON_KEY, APPOINTMENT_KEY
+];
+
+function exportState() {
+  const data = {};
+  for (const key of STATE_KEYS) {
+    const val = localStorage.getItem(key);
+    if (val) {
+      try { data[key] = JSON.parse(val); } catch (e) { data[key] = val; }
+    }
+  }
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const date = new Date().toISOString().slice(0, 10);
+  a.download = `rtk14_state_${date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importState(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      for (const [key, val] of Object.entries(data)) {
+        if (STATE_KEYS.includes(key)) {
+          localStorage.setItem(key, JSON.stringify(val));
+        }
+      }
+      location.reload();
+    } catch (e) {
+      alert('상태 파일을 읽을 수 없습니다.');
+    }
+  };
+  reader.readAsText(file);
+}
+
 // ===== SCORING =====
 
 function calculateScore(officer, affairKey) {
@@ -1516,6 +1560,12 @@ function populateDropdown(selectId, items, labelFn) {
 // ===== INITIALIZATION =====
 
 function init() {
+  // State export/import
+  document.getElementById('state-export').addEventListener('click', exportState);
+  document.getElementById('state-import').addEventListener('change', (e) => {
+    if (e.target.files[0]) importState(e.target.files[0]);
+  });
+
   precomputeScores();
 
   // Populate dropdowns

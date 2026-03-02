@@ -67,12 +67,39 @@ body {
   box-shadow: var(--shadow);
 }
 
+.header__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
 .header__title {
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 12px;
   letter-spacing: 0;
+}
+
+.state-sync {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-state {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-state:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 /* ===== 2-Tier Tabs ===== */

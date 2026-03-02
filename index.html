@@ -10,7 +10,16 @@
 </head>
 <body>
   <header class="header">
-    <h1 class="header__title">삼국지 14 내정도우미</h1>
+    <div class="header__row">
+      <h1 class="header__title">삼국지 14 내정도우미</h1>
+      <div class="state-sync">
+        <button class="btn-state" id="state-export" title="상태 내보내기">내보내기</button>
+        <label class="btn-state btn-state--import" title="상태 가져오기">
+          가져오기
+          <input type="file" id="state-import" accept=".json" hidden>
+        </label>
+      </div>
+    </div>
     <nav class="tabs-top" id="tabs-top">
       <button class="tab-top active" data-category="current">현재</button>
       <button class="tab-top" data-category="all">전체</button>
