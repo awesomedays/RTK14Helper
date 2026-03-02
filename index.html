@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>삼국지 14 내정도우미</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <h1 class="header__title">삼국지 14 내정도우미</h1>
+    <nav class="tabs-top" id="tabs-top">
+      <button class="tab-top active" data-category="current">현재</button>
+      <button class="tab-top" data-category="all">전체</button>
+    </nav>
+    <nav class="tabs-sub" id="tabs-sub">
+      <!-- JS가 동적으로 채움 -->
+    </nav>
+  </header>
+
+  <main class="main">
+    <!-- 내정 최적화 탭 -->
+    <section id="tab-optimize" class="tab-content">
+      <div class="affair-selector">
+        <button class="affair-btn active" data-affair="agriculture">🌾 농업</button>
+        <button class="affair-btn" data-affair="commerce">💰 상업</button>
+        <button class="affair-btn" data-affair="security">🛡️ 치안</button>
+        <button class="affair-btn" data-affair="training">⚔️ 훈련</button>
+        <button class="affair-btn" data-affair="walls">🏯 성벽</button>
+        <button class="affair-btn" data-affair="development">🔨 개발</button>
+      </div>
+
+      <div class="affair-info" id="affair-info"></div>
+
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label for="opt-corps">군단</label>
+          <select id="opt-corps"><option value="">전체</option></select>
+        </div>
+        <div class="filter-group">
+          <label for="opt-location">소재</label>
+          <select id="opt-location"><option value="">전체</option></select>
+        </div>
+        <div class="filter-group">
+          <label for="opt-min-stat">최소 기본능력</label>
+          <input type="number" id="opt-min-stat" min="0" max="100" value="0" placeholder="0">
+        </div>
+        <button class="btn-reset" id="opt-reset">초기화</button>
+      </div>
+
+      <div class="result-count" id="opt-count"></div>
+      <div class="table-wrap">
+        <table class="data-table" id="opt-table">
+          <thead>
+            <tr>
+              <th class="col-rank">순위</th>
+              <th class="col-name sortable" data-sort="name">무장</th>
+              <th class="col-stat sortable" data-sort="baseStat">기본능력</th>
+              <th class="col-score sortable" data-sort="score">내정점수</th>
+              <th class="col-traits">관련 개성</th>
+              <th class="col-location sortable" data-sort="location">소재</th>
+              <th class="col-corps sortable" data-sort="corps">군단</th>
+            </tr>
+          </thead>
+          <tbody id="opt-tbody"></tbody>
+        </table>
+      </div>
+      <button class="btn-load-more" id="opt-load-more" style="display:none">더 보기</button>
+    </section>
+
+    <!-- 무장 검색 탭 -->
+    <section id="tab-search" class="tab-content">
+      <div class="filter-bar">
+        <div class="filter-group filter-group--wide">
+          <label for="search-name">이름 검색</label>
+          <input type="text" id="search-name" placeholder="이름 또는 초성 (예: ㅈㄱㄹ)">
+        </div>
+        <div class="filter-group">
+          <label for="search-gender">성별</label>
+          <select id="search-gender">
+            <option value="">전체</option>
+            <option value="남">남</option>
+            <option value="여">여</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="search-ideology">주의</label>
+          <select id="search-ideology"><option value="">전체</option></select>
+        </div>
+        <div class="filter-group">
+          <label for="search-corps">군단</label>
+          <select id="search-corps"><option value="">전체</option></select>
+        </div>
+        <div class="filter-group">
+          <label for="search-location">소재</label>
+          <select id="search-location"><option value="">전체</option></select>
+        </div>
+        <div class="filter-group">
+          <label for="search-trait">개성</label>
+          <select id="search-trait"><option value="">전체</option></select>
+        </div>
+        <button class="btn-reset" id="search-reset">초기화</button>
+      </div>
+
+      <div class="result-count" id="search-count"></div>
+      <div class="table-wrap">
+        <table class="data-table" id="search-table">
+          <thead>
+            <tr>
+              <th class="col-id sortable" data-sort="id">번호</th>
+              <th class="col-name sortable" data-sort="name">무장</th>
+              <th class="col-stat sortable" data-sort="leadership">통솔</th>
+              <th class="col-stat sortable" data-sort="power">무력</th>
+              <th class="col-stat sortable" data-sort="intelligence">지력</th>
+              <th class="col-stat sortable" data-sort="politics">정치</th>
+              <th class="col-stat sortable" data-sort="charm">매력</th>
+              <th class="col-total sortable" data-sort="total">합계</th>
+              <th class="col-traits-sm">개성</th>
+              <th class="col-corps sortable" data-sort="corps">군단</th>
+            </tr>
+          </thead>
+          <tbody id="search-tbody"></tbody>
+        </table>
+      </div>
+      <button class="btn-load-more" id="search-load-more" style="display:none">더 보기</button>
+    </section>
+
+    <!-- 무장 비교 탭 -->
+    <section id="tab-compare" class="tab-content">
+      <div class="compare-selector">
+        <div class="compare-search-wrap">
+          <label>무장 추가 (최대 4명)</label>
+          <input type="text" id="compare-input" placeholder="이름 검색..." autocomplete="off">
+          <div class="autocomplete-list" id="compare-autocomplete"></div>
+        </div>
+        <div class="compare-chips" id="compare-chips"></div>
+      </div>
+      <div class="compare-grid" id="compare-grid">
+        <p class="compare-placeholder">비교할 무장을 선택해주세요.</p>
+      </div>
+    </section>
+
+    <!-- 보유 무장 탭 -->
+    <section id="tab-roster" class="tab-content active">
+      <div class="roster-add">
+        <div class="compare-search-wrap">
+          <label>무장 추가</label>
+          <input type="text" id="roster-input" placeholder="이름 검색..." autocomplete="off">
+          <div class="autocomplete-list" id="roster-autocomplete"></div>
+        </div>
+      </div>
+
+      <div class="result-count" id="roster-count"></div>
+      <div class="table-wrap">
+        <table class="data-table" id="roster-table">
+          <thead>
+            <tr>
+              <th class="col-name sortable" data-sort="name">무장</th>
+              <th class="col-stat-sm sortable" data-sort="leadership">통솔</th>
+              <th class="col-stat-sm sortable" data-sort="power">무력</th>
+              <th class="col-stat-sm sortable" data-sort="intelligence">지력</th>
+              <th class="col-stat-sm sortable" data-sort="politics">정치</th>
+              <th class="col-stat-sm sortable" data-sort="charm">매력</th>
+              <th class="col-stat sortable" data-sort="lp">통무</th>
+              <th class="col-stat sortable" data-sort="ip">지정</th>
+              <th class="col-traits-sm">개성</th>
+              <th style="width:50px">삭제</th>
+            </tr>
+          </thead>
+          <tbody id="roster-tbody"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:12px; text-align:right;">
+        <button class="btn-reset" id="roster-clear">전체 초기화</button>
+      </div>
+    </section>
+
+    <!-- 보유도시 탭 -->
+    <section id="tab-cities" class="tab-content">
+      <div class="cities-add">
+        <div class="compare-search-wrap">
+          <label>도시 추가</label>
+          <input type="text" id="cities-input" placeholder="도시명 검색..." autocomplete="off">
+          <div class="autocomplete-list" id="cities-autocomplete"></div>
+        </div>
+      </div>
+
+      <div class="result-count" id="cities-count"></div>
+      <div class="table-wrap">
+        <table class="data-table" id="cities-table">
+          <thead>
+            <tr>
+              <th style="width:70px">우선순위</th>
+              <th class="col-name">도시</th>
+              <th class="col-stat">주</th>
+              <th class="col-stat">지역내정인원</th>
+              <th style="width:90px">순서변경</th>
+              <th style="width:50px">삭제</th>
+            </tr>
+          </thead>
+          <tbody id="cities-tbody"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:12px; text-align:right;">
+        <button class="btn-reset" id="cities-clear">전체 초기화</button>
+      </div>
+    </section>
+
+    <!-- 군단관리 탭 -->
+    <section id="tab-corps" class="tab-content">
+      <div class="corps-create filter-bar">
+        <div class="filter-group filter-group--wide">
+          <label for="corps-name-input">군단명</label>
+          <input type="text" id="corps-name-input" placeholder="군단 이름...">
+        </div>
+        <div class="filter-group">
+          <label for="corps-role-select">역할</label>
+          <select id="corps-role-select">
+            <option value="점령">점령</option>
+            <option value="전투">전투</option>
+            <option value="방어">방어</option>
+          </select>
+        </div>
+        <button class="btn-add" id="corps-add-btn">군단 추가</button>
+      </div>
+
+      <div id="corps-list"></div>
+    </section>
+
+    <!-- 내정관리 탭 -->
+    <section id="tab-admin" class="tab-content">
+      <div class="admin-config">
+        <div class="admin-settings filter-bar">
+          <div class="filter-group">
+            <label>교역 국가</label>
+            <div class="trade-checkboxes">
+              <label class="trade-checkbox"><input type="checkbox" id="trade-ansik"> 안식국</label>
+              <label class="trade-checkbox"><input type="checkbox" id="trade-cheonchuk"> 천축국</label>
+              <label class="trade-checkbox"><input type="checkbox" id="trade-daejin"> 대진국</label>
+              <label class="trade-checkbox"><input type="checkbox" id="trade-guisang"> 귀상국</label>
+            </div>
+          </div>
+          <div id="trade-manual-config"></div>
+        </div>
+        <div id="admin-city-slots"></div>
+        <div style="margin-top: 12px; text-align: right;">
+          <button class="btn-add" id="admin-run-btn">배정 실행</button>
+        </div>
+      </div>
+
+      <div id="admin-results">
+        <p style="text-align:center;padding:24px;color:var(--text-muted)">보유무장, 보유도시, 군단을 설정한 후 "배정 실행" 버튼을 눌러주세요.</p>
+      </div>
+    </section>
+
+    <!-- 호출현황 탭 -->
+    <section id="tab-summon" class="tab-content">
+      <div id="summon-content"></div>
+    </section>
+
+    <!-- 임명현황 탭 -->
+    <section id="tab-appointment" class="tab-content">
+      <div id="appointment-content"></div>
+    </section>
+  </main>
+
+  <!-- 무장 상세 모달 -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal">
+      <button class="modal__close" id="modal-close">&times;</button>
+      <div class="modal__content" id="modal-content"></div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
