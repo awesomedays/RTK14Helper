@@ -10,6 +10,7 @@
 .claude/skills/
 .claude/telemetry/
 .claude/stop-hook-git-check.sh
+.claude/settings.local.json
 node_modules/
 .DS_Store
 Thumbs.db
