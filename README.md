@@ -35,31 +35,48 @@ GitHub Pages를 통해 접속할 수 있습니다:
 - **localStorage** — 브라우저 내 데이터 영속화
 - **정적 호스팅** — 서버사이드 로직 없이 순수 클라이언트 사이드로 동작
 
-## 데이터 생성
+## 빌드
 
+### 데이터 생성
 무장/도시 데이터는 CSV 파일로부터 자동 생성됩니다:
-
 ```bash
 node scripts/generate_data.js
 ```
-
 - 입력: `data/RTK14_characters_PK.csv`, `data/RTK_cities.csv`
 - 출력: `data.js` (OFFICERS, CITIES 배열 및 파생 목록)
+
+### 앱 번들링
+소스 모듈을 단일 번들 파일로 합칩니다:
+```bash
+node scripts/build.js
+```
+- 입력: `src/*.js` 모듈
+- 출력: `app.bundle.js`
 
 ## 프로젝트 구조
 
 ```
 RTK14Helper/
 ├── index.html              # 메인 HTML
-├── app.js                  # 애플리케이션 로직
-├── style.css               # 스타일시트
+├── style.css               # 스타일시트 (라이트/다크 테마)
+├── app.bundle.js           # 빌드된 애플리케이션 번들 (자동 생성)
 ├── data.js                 # 자동 생성된 무장/도시 데이터
+├── src/                    # 소스 모듈
+│   ├── main.js             # 앱 진입점 및 이벤트 핸들러
+│   ├── config.js           # 설정 상수 (내정 직책, 특성 보너스 등)
+│   ├── state.js            # 애플리케이션 상태 관리
+│   ├── persistence.js      # localStorage 영속화
+│   ├── scoring.js          # 내정 점수 계산 엔진
+│   ├── officers.js         # 무장 검색/필터 유틸리티
+│   ├── assignment.js       # 내정 배정 알고리즘
+│   └── renderers.js        # UI 렌더링 로직
+├── scripts/
+│   ├── build.js            # src/ 모듈 → app.bundle.js 번들링
+│   └── generate_data.js    # CSV → data.js 변환 스크립트
 ├── data/                   # 원본 CSV 데이터
 │   ├── RTK14_characters_PK.csv
 │   ├── RTK14_characters.csv
 │   └── RTK_cities.csv
-├── scripts/
-│   └── generate_data.js    # CSV → data.js 변환 스크립트
 └── docs/                   # 내부 문서
 ```
 
